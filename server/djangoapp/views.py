@@ -6,7 +6,7 @@ from .models import CarModel, CarMake
 # from .restapis import related methods
 from .restapis import get_dealers_from_cf
 from .restapis import get_dealer_by_id_from_cf
-from .restapis import get_dealer_reviews_from_cf, create_new_review
+from .restapis import get_dealer_reviews_from_cf, create_new_review, post_request
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -152,14 +152,14 @@ def add_review(request, dealer_id):
                 }
             if form.get("purchasecheck"):
                 review["purchase_date"] = datetime.strptime(form.get("purchasedate"), "%m/%d/%Y").isoformat()
-                car = models.CarModel.objects.get(pk=form["car"])
+                car = CarModel.objects.get(pk=form["car"])
                 review["car_make"] = car.carmake.name
                 review["car_model"] = car.name
                 review["car_year"]= car.year.strftime("%Y")
             json_payload = {"review": review}
             print (json_payload)
-            url = "https://93cde033.eu-gb.apigw.appdomain.cloud/api/review/post_review"
-            restapis.post_request(url, json_payload, dealerId=dealer_id)
-            return redirect("djangoapp:dealer_details", dealer_id=dealer_id)
+            url = "https://93cde033.eu-gb.apigw.appdomain.cloud/api/review"
+            post_request(url, json_payload, dealerId=dealer_id)
+            return redirect("djangoapp/dealer_details.html", dealer_id=dealer_id)
         else:
             return redirect("/djangoapp/login")
